@@ -1,28 +1,32 @@
-hotels = [
-    {"id": 1, "title": "Sochi", "name": "sochi"},
-    {"id": 2, "title": "Дубай", "name": "dubai"},
-    {"id": 3, "title": "Мальдивы", "name": "maldivi"},
-    {"id": 4, "title": "Геленджик", "name": "gelendzhik"},
-    {"id": 5, "title": "Москва", "name": "moscow"},
-    {"id": 6, "title": "Казань", "name": "kazan"},
-    {"id": 7, "title": "Санкт-Петербург", "name": "spb"},
-]
+
+from typing import Sequence, Union
+
+from alembic import op
+import sqlalchemy as sa
 
 
+revision: str = '2bf8bb6b8b58'
+down_revision: Union[str, None] = '970e3b09911e'
+branch_labels: Union[str, Sequence[str], None] = None
+depends_on: Union[str, Sequence[str], None] = None
 
 
+def upgrade() -> None:
+  
+    op.create_table('rooms',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('hotel_id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(), nullable=False),
+    sa.Column('description', sa.String(), nullable=True),
+    sa.Column('price', sa.Integer(), nullable=False),
+    sa.Column('quanityquantity', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['hotel_id'], ['hotels.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+  
 
-@router.get("")
-def get_hotels(
-    id: int = Query(None),
-    title: str = Query(None),
-    page: int = Query(1),
-    per_page: int = Query(3),
-):
-    filtered_hotels = [
-        hotel for hotel in hotels
-        if (id is None or hotel["id"] == id) and (title is None or title.lower() in hotel["title"].lower())
-    ]
-    start = (page - 1) * per_page
-    end = start + per_page
-    return filtered_hotels[start:end]
+
+def downgrade() -> None:
+ 
+    op.drop_table('rooms')
+ 
